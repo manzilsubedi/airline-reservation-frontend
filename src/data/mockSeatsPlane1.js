@@ -1,0 +1,123 @@
+const mockSeatsPlane1 = [
+    
+        { id: 1, row: '1', column: 'A', isReserved: false, isLocked: false },
+        { id: 2, row: '1', column: 'B', isReserved: false, isLocked: false },
+        { id: 3, row: '1', column: 'C', isReserved: false, isLocked: false },
+        { id: 4, row: '1', column: 'D', isReserved: false, isLocked: false },
+    
+        { id: 5, row: '2', column: 'A', isReserved: false, isLocked: false },
+        { id: 6, row: '2', column: 'B', isReserved: false, isLocked: false },
+        { id: 7, row: '2', column: 'C', isReserved: false, isLocked: false },
+        { id: 8, row: '2', column: 'D', isReserved: false, isLocked: false },
+    
+        { id: 9, row: '3', column: 'A', isReserved: false, isLocked: false },
+        { id: 10, row: '3', column: 'B', isReserved: false, isLocked: false },
+        { id: 11, row: '3', column: 'C', isReserved: false, isLocked: false },
+        { id: 12, row: '3', column: 'D', isReserved: false, isLocked: false },
+    
+        { id: 13, row: '4', column: 'A', isReserved: false, isLocked: false },
+        { id: 14, row: '4', column: 'B', isReserved: false, isLocked: false },
+        { id: 15, row: '4', column: 'C', isReserved: false, isLocked: false },
+        { id: 16, row: '4', column: 'D', isReserved: false, isLocked: false },
+        { id: 17, row: '4', column: 'E', isReserved: false, isLocked: false },
+        { id: 18, row: '4', column: 'F', isReserved: false, isLocked: false },
+    
+        { id: 19, row: '5', column: 'A', isReserved: false, isLocked: false },
+        { id: 20, row: '5', column: 'B', isReserved: false, isLocked: false },
+        { id: 21, row: '5', column: 'C', isReserved: false, isLocked: false },
+        { id: 22, row: '5', column: 'D', isReserved: false, isLocked: false },
+        { id: 23, row: '5', column: 'E', isReserved: false, isLocked: false },
+        { id: 24, row: '5', column: 'F', isReserved: false, isLocked: false },
+    
+        { id: 25, row: '6', column: 'A', isReserved: false, isLocked: false },
+        { id: 26, row: '6', column: 'B', isReserved: false, isLocked: false },
+        { id: 27, row: '6', column: 'C', isReserved: false, isLocked: false },
+        { id: 28, row: '6', column: 'D', isReserved: false, isLocked: false },
+        { id: 29, row: '6', column: 'E', isReserved: false, isLocked: false },
+        { id: 30, row: '6', column: 'F', isReserved: false, isLocked: false },
+    
+        { id: 31, row: '7', column: 'A', isReserved: false, isLocked: false },
+        { id: 32, row: '7', column: 'B', isReserved: false, isLocked: false },
+        { id: 33, row: '7', column: 'C', isReserved: false, isLocked: false },
+        { id: 34, row: '7', column: 'D', isReserved: false, isLocked: false },
+        { id: 35, row: '7', column: 'E', isReserved: false, isLocked: false },
+        { id: 36, row: '7', column: 'F', isReserved: false, isLocked: false },
+    
+        { id: 37, row: '8', column: 'A', isReserved: false, isLocked: false },
+        { id: 38, row: '8', column: 'B', isReserved: false, isLocked: false },
+        { id: 39, row: '8', column: 'C', isReserved: false, isLocked: false },
+        { id: 40, row: '8', column: 'D', isReserved: false, isLocked: false },
+        { id: 41, row: '8', column: 'E', isReserved: false, isLocked: false },
+        { id: 42, row: '8', column: 'F', isReserved: false, isLocked: false },
+    
+        { id: 43, row: '9', column: 'A', isReserved: false, isLocked: false },
+        { id: 44, row: '9', column: 'B', isReserved: false, isLocked: false },
+        { id: 45, row: '9', column: 'C', isReserved: false, isLocked: false },
+        { id: 46, row: '9', column: 'D', isReserved: false, isLocked: false },
+        { id: 47, row: '9', column: 'E', isReserved: false, isLocked: false },
+        { id: 48, row: '9', column: 'F', isReserved: false, isLocked: false },
+    
+        { id: 49, row: '10', column: 'A', isReserved: false, isLocked: false },
+        { id: 50, row: '10', column: 'B', isReserved: false, isLocked: false },
+        { id: 51, row: '10', column: 'C', isReserved: false, isLocked: false },
+        { id: 52, row: '10', column: 'D', isReserved: false, isLocked: false },
+        { id: 53, row: '10', column: 'E', isReserved: false, isLocked: false },
+        { id: 54, row: '10', column: 'F', isReserved: false, isLocked: false },
+    
+        { id: 55, row: '11', column: 'A', isReserved: false, isLocked: false },
+        { id: 56, row: '11', column: 'B', isReserved: false, isLocked: false },
+        { id: 57, row: '11', column: 'C', isReserved: false, isLocked: false },
+        { id: 58, row: '11', column: 'D', isReserved: false, isLocked: false },
+        { id: 59, row: '11', column: 'E', isReserved: false, isLocked: false },
+        { id: 60, row: '11', column: 'F', isReserved: false, isLocked: false },
+    
+        { id: 61, row: '12', column: 'A', isReserved: false, isLocked: false },
+        { id: 62, row: '12', column: 'B', isReserved: false, isLocked: false },
+        { id: 63, row: '12', column: 'C', isReserved: false, isLocked: false },
+        { id: 64, row: '12', column: 'D', isReserved: false, isLocked: false },
+        { id: 65, row: '12', column: 'E', isReserved: false, isLocked: false },
+        { id: 66, row: '12', column: 'F', isReserved: false, isLocked: false },
+    
+        { id: 67, row: '13', column: 'A', isReserved: false, isLocked: false },
+        { id: 68, row: '13', column: 'B', isReserved: false, isLocked: false },
+        { id: 69, row: '13', column: 'C', isReserved: false, isLocked: false },
+        { id: 70, row: '13', column: 'D', isReserved: false, isLocked: false },
+        { id: 71, row: '13', column: 'E', isReserved: false, isLocked: false },
+        { id: 72, row: '13', column: 'F', isReserved: false, isLocked: false },
+    
+        { id: 73, row: '14', column: 'A', isReserved: false, isLocked: false },
+        { id: 74, row: '14', column: 'B', isReserved: false, isLocked: false },
+        { id: 75, row: '14', column: 'C', isReserved: false, isLocked: false },
+        { id: 76, row: '14', column: 'D', isReserved: false, isLocked: false },
+        { id: 77, row: '14', column: 'E', isReserved: false, isLocked: false },
+        { id: 78, row: '14', column: 'F', isReserved: false, isLocked: false },
+    
+        { id: 79, row: '15', column: 'A', isReserved: false, isLocked: false },
+        { id: 80, row: '15', column: 'B', isReserved: false, isLocked: false },
+        { id: 81, row: '15', column: 'C', isReserved: false, isLocked: false },
+        { id: 82, row: '15', column: 'D', isReserved: false, isLocked: false },
+        { id: 83, row: '15', column: 'E', isReserved: false, isLocked: false },
+        { id: 84, row: '15', column: 'F', isReserved: false, isLocked: false },
+    
+        { id: 85, row: '16', column: 'A', isReserved: false, isLocked: false },
+        { id: 86, row: '16', column: 'B', isReserved: false, isLocked: false },
+        { id: 87, row: '16', column: 'C', isReserved: false, isLocked: false },
+        { id: 88, row: '16', column: 'D', isReserved: false, isLocked: false },
+        { id: 89, row: '16', column: 'E', isReserved: false, isLocked: false },
+        { id: 90, row: '16', column: 'F', isReserved: false, isLocked: false },
+    
+        { id: 91, row: '17', column: 'A', isReserved: false, isLocked: false },
+        { id: 92, row: '17', column: 'B', isReserved: false, isLocked: false },
+        { id: 93, row: '17', column: 'C', isReserved: false, isLocked: false },
+        { id: 94, row: '17', column: 'D', isReserved: false, isLocked: false },
+        { id: 95, row: '17', column: 'E', isReserved: false, isLocked: false },
+        { id: 96, row: '17', column: 'F', isReserved: false, isLocked: false },
+    
+        { id: 97, row: '18', column: 'A', isReserved: false, isLocked: false },
+        { id: 98, row: '18', column: 'B', isReserved: false, isLocked: false },
+        { id: 99, row: '18', column: 'C', isReserved: false, isLocked: false },
+        { id: 100, row: '18', column: 'D', isReserved: false, isLocked: false },
+    // Continue adding rows...
+];
+
+export default mockSeatsPlane1;

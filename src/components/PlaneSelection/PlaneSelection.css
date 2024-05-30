@@ -1,0 +1,11 @@
+/* src/components/PlaneSelection/PlaneSelection.css */
+.plane-selection {
+    margin-bottom: 20px;
+}
+
+.plane-selection button {
+    margin: 0 10px;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+}

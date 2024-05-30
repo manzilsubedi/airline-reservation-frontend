@@ -1,0 +1,19 @@
+/* src/components/Seat/Seat.css */
+.seat {
+    padding: 10px;
+    background-color: #ddd;
+    border: 1px solid #ccc;
+    cursor: pointer;
+}
+.seat.selected {
+    background-color: yellow;
+}
+.seat.reserved {
+    background-color: red;
+}
+.seat.locked {
+    background-color: orange;
+}
+.seat:disabled {
+    cursor: not-allowed;
+}

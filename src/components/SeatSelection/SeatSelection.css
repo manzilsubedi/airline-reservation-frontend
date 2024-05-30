@@ -1,0 +1,23 @@
+/* src/components/SeatSelection/SeatSelection.css */
+.seat-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 20px;
+}
+
+.seat-row {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    align-items: center;
+}
+
+.seat-group {
+    display: flex;
+    gap: 10px;
+}
+
+.aisle {
+    width: 40px; /* Adjust this width to make the aisle wider or narrower */
+}
