@@ -13,8 +13,8 @@ const PlaneSelection = ({ onSelectPlane }) => {
     return (
         <div className="plane-selection">
             <h2>Select a Plane</h2>
-            <button onClick={() => handlePlaneSelect(1)}>Plane 1</button>
-            <button onClick={() => handlePlaneSelect(2)}>Plane 2</button>
+            <button onClick={() => handlePlaneSelect('66587ad30cef16eb96e7fedc')}>Plane 1</button>
+            <button onClick={() => handlePlaneSelect('66587ae20cef16eb96e81a6b')}>Plane 2</button>
         </div>
     );
 };

@@ -1,0 +1,26 @@
+/* Payment.css */
+.payment {
+    border: 1px solid #ccc;
+    padding: 20px;
+    margin: 20px 0;
+}
+
+.payment h2 {
+    margin-bottom: 20px;
+}
+
+.payment label {
+    display: block;
+    margin-bottom: 10px;
+}
+
+.payment input {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 10px;
+}
+
+.payment button {
+    margin-right: 10px;
+    padding: 10px 20px;
+}

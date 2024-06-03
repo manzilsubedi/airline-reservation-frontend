@@ -1,3 +1,4 @@
+// Seat.js
 import React from 'react';
 import './Seat.css';
 
@@ -13,14 +14,27 @@ const Seat = ({ seat, isSelected, onSeatClick, isLocked, isReserved, userRole })
     };
 
     let seatClass = 'seat';
-    if (isSelected) {
-        seatClass += ' selected';
+
+    // Determine seat category based on row number
+    if (seat.row <= 3) {
+        seatClass += ' first-class';
+    } else if (seat.row >= 4 && seat.row <= 7) {
+        seatClass += ' business-class';
+    } else {
+        seatClass += ' economy-class';
     }
-    if (isLocked) {
+
+    // Apply states with higher priority to reserved and locked
+    if (isLocked && isSelected) {
+        seatClass += ' locked selected';
+    } else if (isReserved && isSelected) {
+        seatClass += ' reserved selected';
+    } else if (isLocked) {
         seatClass += ' locked';
-    }
-    if (isReserved) {
+    } else if (isReserved) {
         seatClass += ' reserved';
+    } else if (isSelected) {
+        seatClass += ' selected';
     }
 
     return (

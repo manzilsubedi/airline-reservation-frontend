@@ -4,7 +4,6 @@ import Seat from '../Seat/Seat';
 import './SeatSelection.css';
 
 const SeatSelection = ({ planeId, userRole }) => {
-    console.log('Plane ID:', planeId);  // Debugging line
     const [seats, setSeats] = useState([]);
     const [selectedSeats, setSelectedSeats] = useState([]);
     const [userId] = useState("user123"); // For demo purposes
@@ -12,20 +11,16 @@ const SeatSelection = ({ planeId, userRole }) => {
 
     useEffect(() => {
         if (planeId) {
-            console.log(`Fetching seats for planeId: ${planeId}`);
             axios.get(`https://localhost:7264/api/SeatReservations/${planeId}`)
                 .then(response => {
-                    console.log('Fetched seats:', response.data);
                     setSeats(response.data);
                 })
                 .catch(error => {
                     console.error('There was an error fetching the seats!', error);
                 });
         } else {
-            console.log('Fetching all seats');
             axios.get('https://localhost:7264/api/SeatReservations/all')
                 .then(response => {
-                    console.log('Fetched all seats:', response.data);
                     setSeats(response.data);
                 })
                 .catch(error => {
@@ -34,7 +29,6 @@ const SeatSelection = ({ planeId, userRole }) => {
         }
 
         return () => {
-            // Clear all unlock timers on component unmount
             Object.values(unlockTimers.current).forEach(clearTimeout);
         };
     }, [planeId]);
@@ -59,10 +53,7 @@ const SeatSelection = ({ planeId, userRole }) => {
         axios.post(`https://localhost:7264/api/SeatReservations/lock?planeId=${planeId}&userId=${userId}`, [seatId])
             .then(response => {
                 if (response.status === 200) {
-                    console.log(`Seat ${seatId} locked for 10 minutes.`);
                     unlockTimers.current[seatId] = setTimeout(() => unlockSeatForUser(seatId), 10 * 60 * 1000); // Unlock after 10 minutes
-                } else {
-                    console.error(`Failed to lock seat ${seatId}.`);
                 }
             })
             .catch(error => {
@@ -74,12 +65,9 @@ const SeatSelection = ({ planeId, userRole }) => {
         axios.post(`https://localhost:7264/api/SeatReservations/unlock?planeId=${planeId}&userId=${userId}`, [seatId])
             .then(response => {
                 if (response.status === 200) {
-                    console.log(`Seat ${seatId} automatically unlocked after 10 minutes.`);
                     setSelectedSeats(prevSelectedSeats => prevSelectedSeats.filter(id => id !== seatId));
                     clearTimeout(unlockTimers.current[seatId]);
                     delete unlockTimers.current[seatId];
-                } else {
-                    console.error(`Failed to unlock seat ${seatId}.`);
                 }
             })
             .catch(error => {
@@ -88,48 +76,80 @@ const SeatSelection = ({ planeId, userRole }) => {
     };
 
     const handleReserveSeats = () => {
-        // User role restrictions
+        if (selectedSeats.length > 6) {
+            alert('You cannot book more than six seats at once.');
+            return;
+        }
+
         if (userRole === 'user') {
-            // Check if single B or E seat is being selected
             const invalidSeats = selectedSeats.filter(seatId => {
                 const seat = seats.find(s => s.id === seatId);
-                return (planeId === 1 && seat.row >= 4 && (seat.column === 'B' || seat.column === 'E')) ||
-                       (planeId === 2 && seat.row >= 5 && (seat.column === 'B' || seat.column === 'E'));
+                return (parseInt(seat.row) >= 4 && (seat.column === 'B' || seat.column === 'E'));
             });
 
-            if (invalidSeats.length > 0 && selectedSeats.length < 2) {
-                alert('You cannot book a single B or E seat from row 4 in Plane 1 and row 5 in Plane 2.');
+            if (invalidSeats.length === 1 && selectedSeats.length < 2) {
+                alert('You cannot book a single B or E seat from row 4. Please select multiple seats together.');
                 return;
+            }
+
+            const selectedSeatsDetails = selectedSeats.map(seatId => seats.find(s => s.id === seatId));
+            const rows = selectedSeatsDetails.reduce((acc, seat) => {
+                if (!acc[seat.row]) {
+                    acc[seat.row] = [];
+                }
+                acc[seat.row].push(seat.column);
+                return acc;
+            }, {});
+
+            for (const row in rows) {
+                const columns = rows[row].sort();
+                for (let i = 0; i < columns.length - 1; i++) {
+                    if (!isAdjacent(columns[i], columns[i + 1])) {
+                        alert('Please book adjacent seats. Scatter booking not allowed');
+                        return;
+                    }
+                }
+            }
+
+            const rowNumbers = Object.keys(rows).map(Number).sort((a, b) => a - b);
+            for (let i = 0; i < rowNumbers.length - 1; i++) {
+                if (rowNumbers[i + 1] - rowNumbers[i] > 1) {
+                    alert('You can only book seats in the same row or adjacent rows.');
+                    return;
+                }
             }
         }
 
-        // Unlock seats first, then reserve them
-        axios.post(`https://localhost:7264/api/SeatReservations/unlock?planeId=${planeId}&userId=${userId}`, selectedSeats)
-            .then(() => {
-                axios.post(`https://localhost:7264/api/SeatReservations/reserve?planeId=${planeId}&userId=${userId}`, selectedSeats)
-                    .then(response => {
-                        if (response.status === 200) {
-                            alert('Seats reserved successfully!');
-                            setSelectedSeats([]);
-                            // Refresh seat data
-                            axios.get(`https://localhost:7264/api/SeatReservations/${planeId}`)
-                                .then(response => {
-                                    setSeats(response.data);
-                                })
-                                .catch(error => {
-                                    console.error('There was an error fetching the seats!', error);
-                                });
-                        } else {
-                            alert('Failed to reserve seats.');
-                        }
-                    })
-                    .catch(error => {
-                        console.error('There was an error reserving the seats!', error);
-                    });
+        axios.post(`https://localhost:7264/api/SeatReservations/reserve?planeId=${planeId}&userId=${userId}&userRole=${userRole}`, selectedSeats)
+            .then(response => {
+                if (response.status === 200) {
+                    alert('Seats reserved successfully!');
+                    setSelectedSeats([]);
+                    axios.get(`https://localhost:7264/api/SeatReservations/${planeId}`)
+                        .then(response => {
+                            setSeats(response.data);
+                        })
+                        .catch(error => {
+                            console.error('There was an error fetching the seats!', error);
+                        });
+                } else {
+                    alert(response.data);
+                }
             })
             .catch(error => {
-                console.error('There was an error unlocking the seats before reserving:', error);
+                if (error.response && error.response.status === 400) {
+                    alert(error.response.data);
+                } else {
+                    console.error('There was an error reserving the seats!', error);
+                }
             });
+    };
+
+    const isAdjacent = (currentColumn, nextColumn) => {
+        const columnOrder = ["A", "B", "C", "D", "E", "F"];
+        const currentIndex = columnOrder.indexOf(currentColumn);
+        const nextIndex = columnOrder.indexOf(nextColumn);
+        return nextIndex - currentIndex === 1;
     };
 
     const handleLockSeats = () => {
@@ -151,7 +171,6 @@ const SeatSelection = ({ planeId, userRole }) => {
             .then(response => {
                 if (response.status === 200) {
                     alert('Seats unlocked successfully!');
-                    // Refresh seat data
                     axios.get(`https://localhost:7264/api/SeatReservations/${planeId}`)
                         .then(response => {
                             setSeats(response.data);
@@ -169,11 +188,10 @@ const SeatSelection = ({ planeId, userRole }) => {
     };
 
     const handleUnreserveSeats = () => {
-        axios.post(`https://localhost:7264/api/SeatReservations/unreserve?planeId=${planeId}&userId=${userId}`, selectedSeats)
+        axios.post(`https://localhost:7264/api/SeatReservations/unreserve?planeId=${planeId}&userId=${userId}&userRole=${userRole}`, selectedSeats)
             .then(response => {
                 if (response.status === 200) {
                     alert('Seats unreserved successfully!');
-                    // Refresh seat data
                     axios.get(`https://localhost:7264/api/SeatReservations/${planeId}`)
                         .then(response => {
                             setSeats(response.data);
@@ -199,8 +217,8 @@ const SeatSelection = ({ planeId, userRole }) => {
     }, {});
 
     const renderSeats = (row, seatsInRow) => {
-        const leftSeats = seatsInRow.filter(seat => seat.column <= (row <= 3 || (planeId === 2 && row >= 1 && row <= 4) ? 'B' : 'C'));
-        const rightSeats = seatsInRow.filter(seat => seat.column > (row <= 3 || (planeId === 2 && row >= 1 && row <= 4) ? 'B' : 'C'));
+        const leftSeats = seatsInRow.filter(seat => seat.column <= (row <= 3 || (planeId === '66587ae20cef16eb96e81a6b' && row >= 1 && row <= 4) ? 'B' : 'C'));
+        const rightSeats = seatsInRow.filter(seat => seat.column > (row <= 3 || (planeId === '66587ae20cef16eb96e81a6b' && row >= 1 && row <= 4) ? 'B' : 'C'));
 
         return (
             <div key={row} className="seat-row">
@@ -235,19 +253,21 @@ const SeatSelection = ({ planeId, userRole }) => {
         );
     };
 
+    const calculateTotalPrice = () => {
+        const seatPrice = 50; // Example seat price
+        return selectedSeats.length * seatPrice;
+    };
+
     return (
-        <div>
-            <h1>Select Your Seats</h1>
+        <div className="seat-selection-container">
             <div className="seat-grid">
                 {Object.keys(groupedSeats).map(row => {
                     const seatsInRow = groupedSeats[row];
-                    if (planeId === 2) {
+                    if (planeId === '66587ae20cef16eb96e81a6b') {
                         if (parseInt(row) === 33) {
-                            // Plane 2 last row has only 3 seats on the right (D, E, F)
                             const rightSeats = seatsInRow.filter(seat => ['D', 'E', 'F'].includes(seat.column));
                             return renderSeats(row, rightSeats);
                         } else if (parseInt(row) >= 1 && parseInt(row) <= 4) {
-                            // Plane 2 first 4 rows have only 2 seats each
                             const limitedSeats = seatsInRow.filter(seat => ['A', 'B', 'C', 'D'].includes(seat.column));
                             return renderSeats(row, limitedSeats);
                         }
@@ -255,14 +275,24 @@ const SeatSelection = ({ planeId, userRole }) => {
                     return renderSeats(row, seatsInRow);
                 })}
             </div>
-            <button onClick={handleReserveSeats}>Reserve Seats</button>
-            {userRole === 'staff' && (
-                <>
-                    <button onClick={handleLockSeats}>Lock Seats</button>
-                    <button onClick={handleUnlockSeats}>Unlock Seats</button>
-                    <button onClick={handleUnreserveSeats}>Unreserve Seats</button>
-                </>
-            )}
+            <div className="seat-selection-sidebar">
+                <h2>Selected Seats</h2>
+                <ul>
+                    {selectedSeats.map(seatId => {
+                        const seat = seats.find(s => s.id === seatId);
+                        return <li key={seatId}>{seat.row}{seat.column}</li>;
+                    })}
+                </ul>
+                <p>Total Price: ${calculateTotalPrice()}</p>
+                <button onClick={handleReserveSeats}>Reserve Seats</button>
+                {userRole === 'staff' && (
+                    <>
+                        <button onClick={handleLockSeats}>Lock Seats</button>
+                        <button onClick={handleUnlockSeats}>Unlock Seats</button>
+                        <button onClick={handleUnreserveSeats}>Unreserve Seats</button>
+                    </>
+                )}
+            </div>
         </div>
     );
 };

@@ -1,0 +1,25 @@
+/* Cancellation.css */
+.cancellation {
+    border: 1px solid #ccc;
+    padding: 20px;
+    margin: 20px 0;
+}
+
+.cancellation h2 {
+    margin-bottom: 20px;
+}
+
+.cancellation label {
+    display: block;
+    margin-bottom: 10px;
+}
+
+.cancellation input {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 10px;
+}
+
+.cancellation button {
+    padding: 10px 20px;
+}

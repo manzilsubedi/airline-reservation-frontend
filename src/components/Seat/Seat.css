@@ -1,19 +1,53 @@
-/* src/components/Seat/Seat.css */
+/* Seat.css */
+
 .seat {
-    padding: 10px;
-    background-color: #ddd;
+    width: 50px;
+    height: 50px;
+    margin: 5px;
+    text-align: center;
+    line-height: 50px;
     border: 1px solid #ccc;
     cursor: pointer;
+    user-select: none;
+    color: white;
+     /* Make the seats round */
 }
+
+/* Styles for seat classes */
+.seat.first-class {
+    background-color: #1E90FF; /* Dark Blue */
+}
+
+.seat.business-class {
+    background-color: #FF8C00; /* Dark Orange */
+}
+
+.seat.economy-class {
+    background-color: #87CEFA; /* Light Blue */
+}
+
+/* Ensure visibility for selected, locked, and reserved states */
 .seat.selected {
-    background-color: yellow;
+    border-radius: 50%;
+    background-color: #32CD32 !important; /* Green */
+    border: 2px solid #006400; /* Darker green border */
 }
-.seat.reserved {
-    background-color: red;
+
+/* Pink color for locked and reserved seats when selected */
+.seat.locked.selected,
+.seat.reserved.selected {
+    border-radius: 50%;
+    background-color: #FF69B4 !important; /* Pink */
+    border: 2px solid #FF1493 !important; /* Darker pink border */
 }
+
+/* Locked and reserved seats */
 .seat.locked {
-    background-color: orange;
+    background-color: #FF4500 !important; /* Red */
+    border: 2px solid #8B0000 !important; /* Darker red border */
 }
-.seat:disabled {
-    cursor: not-allowed;
+
+.seat.reserved {
+    background-color: #A9A9A9 !important; /* Gray */
+    border: 2px solid #696969 !important; /* Darker gray border */
 }

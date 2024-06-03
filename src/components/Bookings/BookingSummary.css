@@ -1,0 +1,23 @@
+/* BookingSummary.css */
+.booking-summary {
+    border: 1px solid #ccc;
+    padding: 20px;
+    margin: 20px 0;
+}
+
+.booking-summary h2 {
+    margin-bottom: 20px;
+}
+
+.booking-summary ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.booking-summary li {
+    margin-bottom: 10px;
+}
+
+.booking-summary button {
+    padding: 10px 20px;
+}
