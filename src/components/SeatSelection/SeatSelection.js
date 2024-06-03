@@ -3,6 +3,11 @@ import axios from 'axios';
 import Seat from '../Seat/Seat';
 import './SeatSelection.css';
 
+// Define the API URL here
+const API_URL = 'https://cheapair.azurewebsites.net/api';
+
+// cosnt API_LOCAL = 'localhost' ? 'https://localhost:7264/api';
+
 const SeatSelection = ({ planeId, userRole }) => {
     const [seats, setSeats] = useState([]);
     const [selectedSeats, setSelectedSeats] = useState([]);
@@ -11,7 +16,7 @@ const SeatSelection = ({ planeId, userRole }) => {
 
     useEffect(() => {
         if (planeId) {
-            axios.get(`https://localhost:7264/api/SeatReservations/${planeId}`)
+            axios.get(`${API_URL}/SeatReservations/${planeId}`)
                 .then(response => {
                     setSeats(response.data);
                 })
@@ -19,7 +24,7 @@ const SeatSelection = ({ planeId, userRole }) => {
                     console.error('There was an error fetching the seats!', error);
                 });
         } else {
-            axios.get('https://localhost:7264/api/SeatReservations/all')
+            axios.get(`${API_URL}/SeatReservations/all`)
                 .then(response => {
                     setSeats(response.data);
                 })
@@ -50,7 +55,7 @@ const SeatSelection = ({ planeId, userRole }) => {
     };
 
     const lockSeatForUser = (seatId) => {
-        axios.post(`https://localhost:7264/api/SeatReservations/lock?planeId=${planeId}&userId=${userId}`, [seatId])
+        axios.post(`${API_URL}/SeatReservations/lock?planeId=${planeId}&userId=${userId}`, [seatId])
             .then(response => {
                 if (response.status === 200) {
                     unlockTimers.current[seatId] = setTimeout(() => unlockSeatForUser(seatId), 10 * 60 * 1000); // Unlock after 10 minutes
@@ -62,7 +67,7 @@ const SeatSelection = ({ planeId, userRole }) => {
     };
 
     const unlockSeatForUser = (seatId) => {
-        axios.post(`https://localhost:7264/api/SeatReservations/unlock?planeId=${planeId}&userId=${userId}`, [seatId])
+        axios.post(`${API_URL}/SeatReservations/unlock?planeId=${planeId}&userId=${userId}`, [seatId])
             .then(response => {
                 if (response.status === 200) {
                     setSelectedSeats(prevSelectedSeats => prevSelectedSeats.filter(id => id !== seatId));
@@ -120,12 +125,12 @@ const SeatSelection = ({ planeId, userRole }) => {
             }
         }
 
-        axios.post(`https://localhost:7264/api/SeatReservations/reserve?planeId=${planeId}&userId=${userId}&userRole=${userRole}`, selectedSeats)
+        axios.post(`${API_URL}/SeatReservations/reserve?planeId=${planeId}&userId=${userId}&userRole=${userRole}`, selectedSeats)
             .then(response => {
                 if (response.status === 200) {
                     alert('Seats reserved successfully!');
                     setSelectedSeats([]);
-                    axios.get(`https://localhost:7264/api/SeatReservations/${planeId}`)
+                    axios.get(`${API_URL}/SeatReservations/${planeId}`)
                         .then(response => {
                             setSeats(response.data);
                         })
@@ -153,7 +158,7 @@ const SeatSelection = ({ planeId, userRole }) => {
     };
 
     const handleLockSeats = () => {
-        axios.post(`https://localhost:7264/api/SeatReservations/lock?planeId=${planeId}&userId=${userId}`, selectedSeats)
+        axios.post(`${API_URL}/SeatReservations/lock?planeId=${planeId}&userId=${userId}`, selectedSeats)
             .then(response => {
                 if (response.status === 200) {
                     alert('Seats locked successfully!');
@@ -167,11 +172,11 @@ const SeatSelection = ({ planeId, userRole }) => {
     };
 
     const handleUnlockSeats = () => {
-        axios.post(`https://localhost:7264/api/SeatReservations/unlock?planeId=${planeId}&userId=${userId}`, selectedSeats)
+        axios.post(`${API_URL}/SeatReservations/unlock?planeId=${planeId}&userId=${userId}`, selectedSeats)
             .then(response => {
                 if (response.status === 200) {
                     alert('Seats unlocked successfully!');
-                    axios.get(`https://localhost:7264/api/SeatReservations/${planeId}`)
+                    axios.get(`${API_URL}/SeatReservations/${planeId}`)
                         .then(response => {
                             setSeats(response.data);
                         })
@@ -188,11 +193,11 @@ const SeatSelection = ({ planeId, userRole }) => {
     };
 
     const handleUnreserveSeats = () => {
-        axios.post(`https://localhost:7264/api/SeatReservations/unreserve?planeId=${planeId}&userId=${userId}&userRole=${userRole}`, selectedSeats)
+        axios.post(`${API_URL}/SeatReservations/unreserve?planeId=${planeId}&userId=${userId}&userRole=${userRole}`, selectedSeats)
             .then(response => {
                 if (response.status === 200) {
                     alert('Seats unreserved successfully!');
-                    axios.get(`https://localhost:7264/api/SeatReservations/${planeId}`)
+                    axios.get(`${API_URL}/SeatReservations/${planeId}`)
                         .then(response => {
                             setSeats(response.data);
                         })
@@ -253,13 +258,9 @@ const SeatSelection = ({ planeId, userRole }) => {
         );
     };
 
-    const calculateTotalPrice = () => {
-        const seatPrice = 50; // Example seat price
-        return selectedSeats.length * seatPrice;
-    };
-
     return (
         <div className="seat-selection-container">
+            <h1>Select Your Seats</h1>
             <div className="seat-grid">
                 {Object.keys(groupedSeats).map(row => {
                     const seatsInRow = groupedSeats[row];
@@ -275,15 +276,7 @@ const SeatSelection = ({ planeId, userRole }) => {
                     return renderSeats(row, seatsInRow);
                 })}
             </div>
-            <div className="seat-selection-sidebar">
-                <h2>Selected Seats</h2>
-                <ul>
-                    {selectedSeats.map(seatId => {
-                        const seat = seats.find(s => s.id === seatId);
-                        return <li key={seatId}>{seat.row}{seat.column}</li>;
-                    })}
-                </ul>
-                <p>Total Price: ${calculateTotalPrice()}</p>
+            <div className="action-buttons">
                 <button onClick={handleReserveSeats}>Reserve Seats</button>
                 {userRole === 'staff' && (
                     <>

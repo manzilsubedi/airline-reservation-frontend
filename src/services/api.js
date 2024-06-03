@@ -1,38 +1,41 @@
-// src/services/api.js
 import axios from 'axios';
 
-const API_BASE_URL = 'https://localhost:7264/api/SeatReservations';
-const API_URL = 'https://localhost:7264/api';
+
+// Define the API URL here
+const API_URL = 'https://cheapair.azurewebsites.net/api';
+
+// cosnt API_LOCAL = 'localhost' ? 'https://localhost:7264/api';
+// const API_URL = window.location.hostname === 'localhost' ? 'https://localhost:7264/api' : 'https://cheapair.azurewebsites.net/api';
 
 // Set up axios instance with interceptors
 const axiosInstance = axios.create({
     baseURL: API_URL,
-  });
+});
 
 axiosInstance.interceptors.request.use(
     config => {
-      const token = localStorage.getItem('token');
-      if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
-      }
-      return config;
+        const token = localStorage.getItem('token');
+        if (token) {
+            config.headers.Authorization = `Bearer ${token}`;
+        }
+        return config;
     },
     error => Promise.reject(error)
-  );
+);
 
-  export const login = async (email, password) => {
+export const login = async (email, password) => {
     try {
-      const response = await axiosInstance.post('/Auth/login', { email, password });
-      // Save token to localStorage
-      localStorage.setItem('token', response.data.token);
-      localStorage.setItem('role', response.data.role); 
-      return response.data;
+        const response = await axiosInstance.post('/Auth/login', { email, password });
+        // Save token to localStorage
+        localStorage.setItem('token', response.data.token);
+        localStorage.setItem('role', response.data.role);
+        return response.data;
     } catch (error) {
-      console.error('Login failed', error.response ? error.response.data : error.message);
+        console.error('Login failed', error.response ? error.response.data : error.message);
     }
-  };
+};
 
-  export const logout = async (userId) => {
+export const logout = async (userId) => {
     try {
         // Call backend to unlock all seats locked by the user
         await axiosInstance.post('/SeatReservations/unlockAll', { userId });
@@ -44,25 +47,24 @@ axiosInstance.interceptors.request.use(
         console.error('Logout failed', error.response ? error.response.data : error.message);
     }
 };
-  
 
-  export const register = async (email, password) => {
+export const register = async (email, password) => {
     try {
-      const response = await axiosInstance.post('/Auth/register', { email, password });
-      return response.data;
+        const response = await axiosInstance.post('/Auth/register', { email, password });
+        return response.data;
     } catch (error) {
-      throw error.response.data;
+        throw error.response.data;
     }
-  };
-  
+};
+
 export const getSeats = (planeId) => {
-    return axios.get(`${API_BASE_URL}/${planeId}`);
+    return axiosInstance.get(`/SeatReservations/${planeId}`);
 };
 
 export const reserveSeats = (planeId, seatIds, userId) => {
-    return axios.post(`${API_BASE_URL}/reserve`, { planeId, seatIds, userId });
+    return axiosInstance.post(`/SeatReservations/reserve`, { planeId, seatIds, userId });
 };
 
 export const lockSeats = (planeId, seatIds, userId) => {
-    return axios.post(`${API_BASE_URL}/lock`, { planeId, seatIds, userId });
+    return axiosInstance.post(`/SeatReservations/lock`, { planeId, seatIds, userId });
 };
