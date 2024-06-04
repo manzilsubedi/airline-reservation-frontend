@@ -2,10 +2,10 @@ import axios from 'axios';
 
 
 // Define the API URL here
-const API_URL = 'https://cheapair.azurewebsites.net/api';
+//const API_URL = 'https://cheapair.azurewebsites.net/api';
 
-// cosnt API_LOCAL = 'localhost' ? 'https://localhost:7264/api';
-// const API_URL = window.location.hostname === 'localhost' ? 'https://localhost:7264/api' : 'https://cheapair.azurewebsites.net/api';
+// const API_URL = 'https://localhost:7264/api';
+ const API_URL = window.location.hostname === 'localhost' ? 'https://localhost:7264/api' : 'https://cheapair.azurewebsites.net/api';
 
 // Set up axios instance with interceptors
 const axiosInstance = axios.create({
@@ -29,6 +29,7 @@ export const login = async (email, password) => {
         // Save token to localStorage
         localStorage.setItem('token', response.data.token);
         localStorage.setItem('role', response.data.role);
+        localStorage.setItem('userId', response.data.userId);
         return response.data;
     } catch (error) {
         console.error('Login failed', error.response ? error.response.data : error.message);
@@ -55,6 +56,14 @@ export const register = async (email, password) => {
     } catch (error) {
         throw error.response.data;
     }
+};
+
+export const getUserBookings = (userId) => {
+  return axiosInstance.get(`/SeatReservations/bookings/${userId}`);
+};
+
+export const cancelBooking = (bookingId, userId) => {
+  return axiosInstance.post(`/SeatReservations/cancelBooking`, { bookingId, userId });
 };
 
 export const getSeats = (planeId) => {

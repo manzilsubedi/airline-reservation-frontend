@@ -1,17 +1,20 @@
+// src/components/SeatSelection/SeatSelection.js
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import Seat from '../Seat/Seat';
 import './SeatSelection.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import { Modal, Button } from 'react-bootstrap';
 
-// Define the API URL here
 const API_URL = 'https://cheapair.azurewebsites.net/api';
+// const API_URL = 'https://localhost:7264/api';
 
-// cosnt API_LOCAL = 'localhost' ? 'https://localhost:7264/api';
-
-const SeatSelection = ({ planeId, userRole }) => {
+const SeatSelection = ({ planeId, userRole, selectedDate, selectedTime }) => {
     const [seats, setSeats] = useState([]);
     const [selectedSeats, setSelectedSeats] = useState([]);
-    const [userId] = useState("user123"); // For demo purposes
+    const [totalPrice, setTotalPrice] = useState(0);
+    const [userId] = useState(localStorage.getItem('userId'));
+    const [showModal, setShowModal] = useState(false);
     const unlockTimers = useRef({});
 
     useEffect(() => {
@@ -46,8 +49,10 @@ const SeatSelection = ({ planeId, userRole }) => {
         }
         if (selectedSeats.includes(seatId)) {
             unlockSeatForUser(seatId);
+            setTotalPrice(prevPrice => prevPrice - seat.price);
         } else {
             setSelectedSeats(prevSelectedSeats => [...prevSelectedSeats, seatId]);
+            setTotalPrice(prevPrice => prevPrice + seat.price);
             if (userRole === 'user') {
                 lockSeatForUser(seatId);
             }
@@ -147,6 +152,30 @@ const SeatSelection = ({ planeId, userRole }) => {
                 } else {
                     console.error('There was an error reserving the seats!', error);
                 }
+            });
+    };
+
+    const handlePayment = () => {
+        const paymentRequest = {
+            planeId,
+            seatIds: selectedSeats,
+            userId,
+            totalAmount: totalPrice,
+            date: selectedDate,
+            time: selectedTime
+        };
+
+        axios.post(`${API_URL}/SeatReservations/pay`, paymentRequest)
+            .then(response => {
+                if (response.status === 200) {
+                    alert('Payment successful! Your booking is confirmed.');
+                    setTotalPrice(0);
+                } else {
+                    alert('Payment failed.');
+                }
+            })
+            .catch(error => {
+                console.error('There was an error processing the payment!', error);
             });
     };
 
@@ -260,8 +289,8 @@ const SeatSelection = ({ planeId, userRole }) => {
 
     return (
         <div className="seat-selection-container">
-            <h1>Select Your Seats</h1>
             <div className="seat-grid">
+                <h1>Select Your Seats</h1>
                 {Object.keys(groupedSeats).map(row => {
                     const seatsInRow = groupedSeats[row];
                     if (planeId === '66587ae20cef16eb96e81a6b') {
@@ -276,16 +305,44 @@ const SeatSelection = ({ planeId, userRole }) => {
                     return renderSeats(row, seatsInRow);
                 })}
             </div>
-            <div className="action-buttons">
-                <button onClick={handleReserveSeats}>Reserve Seats</button>
+            <div className="seat-selection-sidebar">
+                <h2>Total Price: ${totalPrice}</h2>
+                <ul>
+                    {selectedSeats.map(seatId => {
+                        const seat = seats.find(s => s.id === seatId);
+                        return <li key={seatId}>{seat.row}{seat.column} - ${seat.price}</li>;
+                    })}
+                </ul>
+                <button className="btn btn-primary" onClick={handleReserveSeats}>Reserve Seats</button>
                 {userRole === 'staff' && (
                     <>
-                        <button onClick={handleLockSeats}>Lock Seats</button>
-                        <button onClick={handleUnlockSeats}>Unlock Seats</button>
-                        <button onClick={handleUnreserveSeats}>Unreserve Seats</button>
+                        <button className="btn btn-secondary" onClick={handleLockSeats}>Lock Seats</button>
+                        <button className="btn btn-secondary" onClick={handleUnlockSeats}>Unlock Seats</button>
+                        <button className="btn btn-secondary" onClick={handleUnreserveSeats}>Unreserve Seats</button>
                     </>
                 )}
+                {totalPrice > 0 && (
+                    <button className="btn btn-success" onClick={() => setShowModal(true)}>Pay for Seats</button>
+                )}
             </div>
+
+            <Modal show={showModal} onHide={() => setShowModal(false)}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Confirm Payment</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <p>Total Amount: ${totalPrice}</p>
+                    <p>Proceed to payment?</p>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={() => setShowModal(false)}>
+                        Close
+                    </Button>
+                    <Button variant="primary" onClick={handlePayment}>
+                        Pay
+                    </Button>
+                </Modal.Footer>
+            </Modal>
         </div>
     );
 };
