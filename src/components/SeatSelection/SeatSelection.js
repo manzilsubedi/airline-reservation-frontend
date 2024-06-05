@@ -6,8 +6,9 @@ import './SeatSelection.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Modal, Button } from 'react-bootstrap';
 
-const API_URL = 'https://localhost:7264/api';
+//const API_URL = 'https://localhost:7264/api';
 
+const API_URL = 'https://cheapair.azurewebsites.net/api';
 const SeatSelection = ({ planeId, userRole, selectedDate, selectedTime }) => {
     const [seats, setSeats] = useState([]);
     const [selectedSeats, setSelectedSeats] = useState([]);
