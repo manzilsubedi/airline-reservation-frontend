@@ -1,55 +1,54 @@
 // src/components/Login/Login.js
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { login } from '../../services/api';
-import './Login.css'; // Import the CSS file for styling
+import './Login.css';
 
 const Login = ({ onLogin }) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [error, setError] = useState('');
     const navigate = useNavigate();
+    const location = useLocation();
 
-    const handleSubmit = async (e) => {
+    const handleLogin = async (e) => {
         e.preventDefault();
-        try {
-            const data = await login(email, password);
-            onLogin(data);
-            navigate('/');
-        } catch (err) {
-            setError(err.message);
+        const userData = await login(email, password);
+        if (userData) {
+            onLogin(userData);
+            const state = location.state || {};
+            const { selectedSeats, planeId, selectedDate, selectedTime, userRole } = state;
+            if (selectedSeats && planeId && selectedDate && selectedTime && userRole) {
+                navigate('/seat-selection', {
+                    state: {
+                        selectedSeats,
+                        planeId,
+                        selectedDate,
+                        selectedTime,
+                        userRole,
+                    },
+                });
+            } else {
+                navigate('/');
+            }
+        } else {
+            alert('Login failed. Please check your credentials.');
         }
     };
 
     return (
         <div className="login-container">
-            <div className="login-card">
-                <h2 className="login-title">Login</h2>
-                <form onSubmit={handleSubmit}>
-                    <div className="login-field">
-                        <label className="login-label">Email</label>
-                        <input
-                            type="email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            required
-                            className="login-input"
-                        />
-                    </div>
-                    <div className="login-field">
-                        <label className="login-label">Password</label>
-                        <input
-                            type="password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            required
-                            className="login-input"
-                        />
-                    </div>
-                    {error && <p className="login-error">{error}</p>}
-                    <button type="submit" className="login-button">Login</button>
-                </form>
-            </div>
+            <h2>Login</h2>
+            <form onSubmit={handleLogin}>
+                <div className="form-group">
+                    <label>Email:</label>
+                    <input type="email" className="form-control" value={email} onChange={(e) => setEmail(e.target.value)} required />
+                </div>
+                <div className="form-group">
+                    <label>Password:</label>
+                    <input type="password" className="form-control" value={password} onChange={(e) => setPassword(e.target.value)} required />
+                </div>
+                <button type="submit" className="btn btn-primary">Login</button>
+            </form>
         </div>
     );
 };

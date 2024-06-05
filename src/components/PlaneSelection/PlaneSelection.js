@@ -1,4 +1,3 @@
-// src/components/PlaneSelection/PlaneSelection.js
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './PlaneSelection.css';
@@ -7,17 +6,34 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 const PlaneSelection = ({ onSelectPlane }) => {
     const [selectedPlane, setSelectedPlane] = useState('');
     const [selectedDate, setSelectedDate] = useState('');
+    const [availableTimes, setAvailableTimes] = useState([]);
     const [selectedTime, setSelectedTime] = useState('');
     const navigate = useNavigate();
 
     const handlePlaneChange = (e) => {
         setSelectedPlane(e.target.value);
         setSelectedDate('');
+        setAvailableTimes([]);
         setSelectedTime('');
     };
 
     const handleDateChange = (e) => {
-        setSelectedDate(e.target.value);
+        const date = e.target.value;
+        setSelectedDate(date);
+        const day = new Date(date).getDay();
+        if (selectedPlane === '66587ad30cef16eb96e7fedc') {
+            if ([0, 2, 4].includes(day)) {
+                setAvailableTimes(['07:00']);
+            } else {
+                setAvailableTimes([]);
+            }
+        } else if (selectedPlane === '66587ae20cef16eb96e81a6b') {
+            if ([1, 3, 5, 6].includes(day)) {
+                setAvailableTimes(['13:00', '21:00']);
+            } else {
+                setAvailableTimes([]);
+            }
+        }
         setSelectedTime('');
     };
 
@@ -25,8 +41,8 @@ const PlaneSelection = ({ onSelectPlane }) => {
         setSelectedTime(e.target.value);
     };
 
-    const handlePlaneSelect = () => {
-        if (selectedDate && selectedTime && selectedPlane) {
+    const handleSelection = () => {
+        if (selectedPlane && selectedDate && selectedTime) {
             onSelectPlane(selectedPlane, selectedDate, selectedTime);
             navigate('/seat-selection');
         } else {
@@ -34,88 +50,37 @@ const PlaneSelection = ({ onSelectPlane }) => {
         }
     };
 
-    const getAvailableDates = () => {
-        const today = new Date();
-        const dates = [];
-        for (let i = 0; i < 30; i++) {
-            const date = new Date(today);
-            date.setDate(today.getDate() + i);
-            const day = date.getDay();
-            if (selectedPlane === 'plane1' && [0, 2, 4].includes(day)) {
-                dates.push(date.toISOString().split('T')[0]);
-            } else if (selectedPlane === 'plane2' && [1, 3, 5, 6].includes(day)) {
-                dates.push(date.toISOString().split('T')[0]);
-            }
-        }
-        return dates;
-    };
-
-    const getAvailableTimes = () => {
-        const day = new Date(selectedDate).getDay();
-        if (selectedPlane === 'plane1' && [0, 2, 4].includes(day)) {
-            return <option value="07:00">07:00 AM</option>;
-        } else if (selectedPlane === 'plane2' && [1, 3, 5, 6].includes(day)) {
-            return (
-                <>
-                    <option value="13:00">01:00 PM</option>
-                    <option value="21:00">09:00 PM</option>
-                </>
-            );
-        }
-        return null;
-    };
-
     return (
         <div className="plane-selection-container">
             <h1>Welcome to CheapAir</h1>
             <h3>Your journey starts here</h3>
-            <img src="path/to/plane-image.jpg" alt="Plane" />
+            <div className="plane-selection-background">
+                <img src="path/to/plane-image.jpg" alt="Plane" />
+            </div>
             <div className="form-group">
                 <label htmlFor="plane">Select Your Plane</label>
                 <select id="plane" className="form-control" value={selectedPlane} onChange={handlePlaneChange}>
                     <option value="">Select Plane</option>
-                    <option value="plane1">Plane 1</option>
-                    <option value="plane2">Plane 2</option>
+                    <option value="66587ad30cef16eb96e7fedc">Plane 1</option>
+                    <option value="66587ae20cef16eb96e81a6b">Plane 2</option>
                 </select>
             </div>
-            {selectedPlane && (
-                <>
-                    <div className="form-group">
-                        <label htmlFor="date">Select Date:</label>
-                        <input
-                            type="date"
-                            id="date"
-                            className="form-control"
-                            value={selectedDate}
-                            onChange={handleDateChange}
-                            min={new Date().toISOString().split('T')[0]}
-                            max={new Date(new Date().setDate(new Date().getDate() + 30)).toISOString().split('T')[0]}
-                        />
-                    </div>
-                    <div className="form-group">
-                        <label htmlFor="time">Select Time:</label>
-                        <select
-                            id="time"
-                            className="form-control"
-                            value={selectedTime}
-                            onChange={handleTimeChange}
-                            disabled={!selectedDate}
-                        >
-                            <option value="">Select Time</option>
-                            {selectedDate && getAvailableTimes()}
-                        </select>
-                    </div>
-                </>
-            )}
-            <div>
-                <button
-                    onClick={handlePlaneSelect}
-                    className="btn btn-plane"
-                    disabled={!selectedPlane || !selectedDate || !selectedTime}
-                >
-                    Proceed
-                </button>
+            <div className="form-group">
+                <label htmlFor="date">Select Date</label>
+                <input type="date" id="date" className="form-control" value={selectedDate} onChange={handleDateChange} />
             </div>
+            <div className="form-group">
+                <label htmlFor="time">Select Time</label>
+                <select id="time" className="form-control" value={selectedTime} onChange={handleTimeChange} disabled={!selectedDate}>
+                    <option value="">Select Time</option>
+                    {availableTimes.map(time => (
+                        <option key={time} value={time}>{time}</option>
+                    ))}
+                </select>
+            </div>
+            <button className="btn btn-primary" onClick={handleSelection} disabled={!selectedPlane || !selectedDate || !selectedTime}>
+                Proceed to Seat Selection
+            </button>
         </div>
     );
 };

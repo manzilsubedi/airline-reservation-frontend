@@ -8,6 +8,8 @@ import UserBookings from './components/Bookings/UserBookings';
 import SeatSelection from './components/SeatSelection/SeatSelection';
 import { logout } from './services/api';
 import Navbar from './components/Navbar/Navbar';
+import WelcomePage from './components/WelcomePage/WelcomePage';
+import MakePayment from './components/Payment/MakePayment'; // Add MakePayment component
 import './App.css';
 
 const App = () => {
@@ -60,13 +62,14 @@ const App = () => {
                 <Routes>
                     <Route path="/login" element={<Login onLogin={handleLogin} />} />
                     <Route path="/register" element={<Register />} />
+                    <Route path="/welcome" element={<WelcomePage />} />
+                    <Route path="/" element={<WelcomePage />} />
+                    <Route path="/plane-selection" element={<PlaneSelection onSelectPlane={handleSelectPlane} />} />
+                    <Route path="/seat-selection" element={<SeatSelection planeId={selectedPlane} userRole={userRole} selectedDate={selectedDate} selectedTime={selectedTime} />} />
+                    <Route path="/user-bookings" element={<UserBookings />} />
+                    <Route path="/make-payment" element={<MakePayment />} /> {/* Add MakePayment route */}
                     {isAuthenticated ? (
-                        <>
-                            <Route path="/" element={<PlaneSelection onSelectPlane={handleSelectPlane} />} />
-                            {selectedPlane && <Route path="/seat-selection" element={<SeatSelection planeId={selectedPlane} userRole={userRole} selectedDate={selectedDate} selectedTime={selectedTime} />} />}
-                            <Route path="/user-bookings" element={<UserBookings />} />
-                            <Route path="*" element={<Navigate to="/" />} />
-                        </>
+                        <Route path="*" element={<Navigate to="/" />} />
                     ) : (
                         <Route path="*" element={<Navigate to="/login" />} />
                     )}

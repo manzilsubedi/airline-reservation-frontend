@@ -1,12 +1,59 @@
-// src/components/Payment/Payment.js
-import React, { useState } from 'react';
-import './Payment.css';
+import React, { useState, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import './MakePayment.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { useNavigate } from 'react-router-dom';
 
-const Payment = ({ selectedSeats, userId, totalPrice, travelDate, travelTime }) => {
-    const [passengers, setPassengers] = useState(selectedSeats.map(() => ({ name: '', passportNo: '', age: '' })));
+const API_URL = 'https://localhost:7264/api';
+
+const MakePayment = () => {
+    const location = useLocation();
     const navigate = useNavigate();
+    const {
+        bookingId,
+        planeId,
+        seatIds,
+        userId,
+        totalPrice,
+        travelDate,
+        travelTime,
+        passengers: initialPassengers
+    } = location.state || {};
+
+    // Log the received state for debugging
+    console.log('Location State:', location.state);
+
+    const [passengers, setPassengers] = useState(
+        initialPassengers && initialPassengers.length > 0
+            ? initialPassengers
+            : seatIds
+                ? seatIds.map(() => ({ name: '', passportNo: '', age: '' }))
+                : []
+    );
+
+    useEffect(() => {
+        if (
+            !bookingId ||
+            !planeId ||
+            !seatIds ||
+            !userId ||
+            !totalPrice ||
+            !travelDate ||
+            !travelTime
+        ) {
+            alert('Missing necessary booking information. Redirecting to home page.');
+            navigate('/');
+        }
+    }, [
+        bookingId,
+        planeId,
+        seatIds,
+        userId,
+        totalPrice,
+        travelDate,
+        travelTime,
+        navigate
+    ]);
 
     const handlePassengerChange = (index, field, value) => {
         const updatedPassengers = [...passengers];
@@ -21,17 +68,40 @@ const Payment = ({ selectedSeats, userId, totalPrice, travelDate, travelTime }) 
         }, 0);
     };
 
-    const handleConfirmPayment = () => {
+    const handleConfirmPayment = async () => {
         const totalAmount = calculateTotalAmount();
-        alert(`Total amount to be paid: ${totalAmount}`);
-        // Simulate payment processing
-        alert('Payment successful! Your booking is confirmed.');
-        navigate('/'); // Redirect to home or booking confirmation page
+
+        try {
+            const paymentResponse = await axios.post(`${API_URL}/SeatReservations/pay`, {
+                bookingId,
+                planeId,
+                seatIds,
+                userId,
+                totalPrice: totalAmount,
+                travelDate,
+                travelTime,
+                passengers
+            });
+
+            if (paymentResponse.status === 200) {
+                alert('Payment successful! Your booking is confirmed.');
+                navigate('/'); // Redirect to home or booking confirmation page
+            } else {
+                alert('Payment failed. Please try again.');
+            }
+        } catch (error) {
+            console.error('There was an error processing the payment!', error);
+            alert('There was an error processing the payment. Please try again.');
+        }
     };
 
+    if (!seatIds || !seatIds.length) {
+        return null; // Render nothing if there are no selected seats
+    }
+
     return (
-        <div className="payment-container container">
-            <h2 className="text-center my-4">Payment Details</h2>
+        <div className="make-payment-container container">
+            <h2 className="text-center my-4">Confirm Payment</h2>
             <div className="card mb-4">
                 <div className="card-header">
                     <h5>Passenger Information</h5>
@@ -85,4 +155,4 @@ const Payment = ({ selectedSeats, userId, totalPrice, travelDate, travelTime }) 
     );
 };
 
-export default Payment;
+export default MakePayment;

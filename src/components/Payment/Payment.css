@@ -1,26 +1,28 @@
-/* Payment.css */
-.payment {
-    border: 1px solid #ccc;
+.payment-container {
+    max-width: 800px;
+    margin: auto;
     padding: 20px;
-    margin: 20px 0;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
-.payment h2 {
-    margin-bottom: 20px;
+.passenger-info {
+    background-color: #ffffff;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
 }
 
-.payment label {
-    display: block;
+.passenger-info h6 {
+    margin-bottom: 15px;
+}
+
+.passenger-info .form-group {
     margin-bottom: 10px;
 }
 
-.payment input {
-    width: 100%;
-    padding: 8px;
-    margin-bottom: 10px;
-}
-
-.payment button {
-    margin-right: 10px;
-    padding: 10px 20px;
+.total-amount {
+    margin-top: 20px;
+    font-weight: bold;
 }
