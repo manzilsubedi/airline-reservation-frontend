@@ -2,9 +2,9 @@ import axios from 'axios';
 
 
 // Define the API URL here
-//const API_URL = 'https://cheapair.azurewebsites.net/api';
+const API_URL = 'https://cheapair.azurewebsites.net/api';
 
-const API_URL = 'https://localhost:7264/api';
+//const API_URL = 'https://localhost:7264/api';
  //const API_URL = window.location.hostname === 'localhost' ? 'https://localhost:7264/api' : 'https://cheapair.azurewebsites.net/api';
 
 // Set up axios instance with interceptors

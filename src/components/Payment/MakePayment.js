@@ -4,8 +4,8 @@ import axios from 'axios';
 import './MakePayment.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-const API_URL = 'https://localhost:7264/api';
-
+//const API_URL = 'https://localhost:7264/api';
+const API_URL = 'https://cheapair.azurewebsites.net/api';
 const MakePayment = () => {
     const location = useLocation();
     const navigate = useNavigate();
