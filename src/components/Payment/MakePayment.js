@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './MakePayment.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { Modal, Button } from 'react-bootstrap';
 
 //const API_URL = 'https://localhost:7264/api';
 const API_URL = 'https://cheapair.azurewebsites.net/api';
@@ -31,6 +32,9 @@ const MakePayment = () => {
                 : []
     );
 
+    const [showPaymentModal, setShowPaymentModal] = useState(false);
+    const [paymentDetails, setPaymentDetails] = useState({ totalAmount: 0, discount: 0, passengers: [], seatIds: [] });
+
     useEffect(() => {
         if (
             !bookingId ||
@@ -54,6 +58,13 @@ const MakePayment = () => {
         travelTime,
         navigate
     ]);
+
+    const renderSeats = (seats) => {
+        if (!seats || seats.length === 0) {
+            return 'No seats selected.';
+        }
+        return seats.map(seat => `${seat.row}${seat.column}`).join(', ');
+    };
 
     const handlePassengerChange = (index, field, value) => {
         const updatedPassengers = [...passengers];
@@ -84,8 +95,13 @@ const MakePayment = () => {
             });
 
             if (paymentResponse.status === 200) {
-                alert('Payment successful! Your booking is confirmed.');
-                navigate('/'); // Redirect to home or booking confirmation page
+                setPaymentDetails({
+                    totalAmount,
+                    discount: totalPrice - totalAmount,
+                    passengers,
+                    seatIds,
+                });
+                setShowPaymentModal(true);
             } else {
                 alert('Payment failed. Please try again.');
             }
@@ -151,6 +167,31 @@ const MakePayment = () => {
                 <button className="btn btn-success mx-2" onClick={handleConfirmPayment}>Confirm Payment</button>
                 <button className="btn btn-secondary mx-2" onClick={() => navigate(-1)}>Go Back</button>
             </div>
+
+            <Modal show={showPaymentModal} onHide={() => setShowPaymentModal(false)}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Payment Receipt</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <h5>Booking Details</h5>
+                    <p><strong>Seat IDs:</strong> {paymentDetails.seatIds.join(', ')}</p>
+                    <p><strong>Total Price:</strong> ${totalPrice.toFixed(2)}</p>
+                    <p><strong>Discount:</strong> ${paymentDetails.discount.toFixed(2)}</p>
+                    <p><strong>Amount Paid:</strong> ${paymentDetails.totalAmount.toFixed(2)}</p>
+                    <h5>Passenger Details</h5>
+                    {paymentDetails.passengers.map((passenger, index) => (
+                        <div key={index}>
+                            <p><strong>Name:</strong> {passenger.name}</p>
+                            <p><strong>Passport Number:</strong> {passenger.passportNo}</p>
+                            <p><strong>Age:</strong> {passenger.age}</p>
+                        </div>
+                    ))}
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={() => navigate('/')}>Go to Home</Button>
+                    <Button variant="primary" onClick={() => navigate('/user-bookings')}>Go to My Bookings</Button>
+                </Modal.Footer>
+            </Modal>
         </div>
     );
 };

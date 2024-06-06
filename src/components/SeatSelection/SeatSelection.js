@@ -7,7 +7,6 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { Modal, Button } from 'react-bootstrap';
 
 //const API_URL = 'https://localhost:7264/api';
-
 const API_URL = 'https://cheapair.azurewebsites.net/api';
 const SeatSelection = ({ planeId, userRole, selectedDate, selectedTime }) => {
     const [seats, setSeats] = useState([]);
@@ -15,6 +14,8 @@ const SeatSelection = ({ planeId, userRole, selectedDate, selectedTime }) => {
     const [totalPrice, setTotalPrice] = useState(0);
     const [userId, setUserId] = useState(localStorage.getItem('userId'));
     const [showModal, setShowModal] = useState(false);
+    const [showResponsibilityModal, setShowResponsibilityModal] = useState(false);
+    const [fireExitSeatToConfirm, setFireExitSeatToConfirm] = useState(null);
     const unlockTimers = useRef({});
     const navigate = useNavigate();
 
@@ -42,6 +43,18 @@ const SeatSelection = ({ planeId, userRole, selectedDate, selectedTime }) => {
         }
     };
 
+    const isFireExitSeat = (seatId) => {
+        const seat = seats.find(s => s.id === seatId);
+        if (!seat) return false;
+        if (planeId === '66587ad30cef16eb96e7fedc' && seat.row === '10' && ['A','F'].includes(seat.column)) {
+            return true;
+        }
+        if (planeId === '66587ae20cef16eb96e81a6b' && seat.row === '16' && ['A','F'].includes(seat.column)) {
+            return true;
+        }
+        return false;
+    };
+
     const handleSeatClick = (seatId) => {
         const seat = seats.find(s => s.id === seatId);
         if (userRole === 'user' && (seat.isReserved || seat.isLocked)) {
@@ -53,11 +66,21 @@ const SeatSelection = ({ planeId, userRole, selectedDate, selectedTime }) => {
             setTotalPrice(prevPrice => prevPrice - seat.price);
             unlockSeatForUser(seatId);
         } else {
-            setSelectedSeats(prevSelectedSeats => [...prevSelectedSeats, seatId]);
-            setTotalPrice(prevPrice => prevPrice + seat.price);
-            if (userRole === 'user') {
-                lockSeatForUser(seatId);
+            if (isFireExitSeat(seatId)) {
+                setFireExitSeatToConfirm(seatId);
+                setShowResponsibilityModal(true);
+            } else {
+                selectSeat(seatId);
             }
+        }
+    };
+
+    const selectSeat = (seatId) => {
+        const seat = seats.find(s => s.id === seatId);
+        setSelectedSeats(prevSelectedSeats => [...prevSelectedSeats, seatId]);
+        setTotalPrice(prevPrice => prevPrice + seat.price);
+        if (userRole === 'user') {
+            lockSeatForUser(seatId);
         }
     };
 
@@ -330,6 +353,27 @@ const SeatSelection = ({ planeId, userRole, selectedDate, selectedTime }) => {
                     </Button>
                     <Button variant="primary" onClick={handlePayment}>
                         Pay
+                    </Button>
+                </Modal.Footer>
+            </Modal>
+
+            <Modal show={showResponsibilityModal} onHide={() => setShowResponsibilityModal(false)}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Responsibility Confirmation</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <p>Do you accept the responsibility for the fire exit seat?</p>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={() => setShowResponsibilityModal(false)}>
+                        No
+                    </Button>
+                    <Button variant="primary" onClick={() => {
+                        selectSeat(fireExitSeatToConfirm);
+                        setShowResponsibilityModal(false);
+                        setFireExitSeatToConfirm(null);
+                    }}>
+                        Yes
                     </Button>
                 </Modal.Footer>
             </Modal>
