@@ -5,8 +5,8 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import './UserBookings.css';
 import { useNavigate } from 'react-router-dom';
 
-//const API_URL = 'https://localhost:7264/api'; // or your actual API base URL
-const API_URL = 'https://cheapair.azurewebsites.net/api';
+const API_URL = 'https://localhost:7264/api'; // or your actual API base URL
+//const API_URL = 'https://cheapair.azurewebsites.net/api';
 const UserBookings = () => {
     const [bookings, setBookings] = useState([]);
     const userId = localStorage.getItem('userId');
