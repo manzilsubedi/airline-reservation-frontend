@@ -49,12 +49,15 @@ export const logout = async (userId) => {
     }
 };
 
-export const register = async (email, password) => {
+export const register = async (name, email, password, role) => {
     try {
-        const response = await axiosInstance.post('/Auth/register', { email, password });
+        const response = await axiosInstance.post('/Auth/register', { name, email, password, role });
+        // Save token to localStorage
+        localStorage.setItem('token', response.data.token);
         return response.data;
     } catch (error) {
-        throw error.response.data;
+        console.error('Registration failed', error.response ? error.response.data : error.message);
+        throw new Error(error.response ? error.response.data.message : error.message);
     }
 };
 

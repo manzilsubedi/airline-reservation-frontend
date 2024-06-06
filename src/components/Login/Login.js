@@ -12,25 +12,30 @@ const Login = ({ onLogin }) => {
 
     const handleLogin = async (e) => {
         e.preventDefault();
-        const userData = await login(email, password);
-        if (userData) {
-            onLogin(userData);
-            const state = location.state || {};
-            const { selectedSeats, planeId, selectedDate, selectedTime, userRole } = state;
-            if (selectedSeats && planeId && selectedDate && selectedTime && userRole) {
-                navigate('/seat-selection', {
-                    state: {
-                        selectedSeats,
-                        planeId,
-                        selectedDate,
-                        selectedTime,
-                        userRole,
-                    },
-                });
+        try {
+            const userData = await login(email, password);
+            if (userData) {
+                onLogin(userData);
+                const state = location.state || {};
+                const { selectedSeats, planeId, selectedDate, selectedTime, userRole } = state;
+                if (selectedSeats && planeId && selectedDate && selectedTime && userRole) {
+                    navigate('/seat-selection', {
+                        state: {
+                            selectedSeats,
+                            planeId,
+                            selectedDate,
+                            selectedTime,
+                            userRole,
+                        },
+                    });
+                } else {
+                    navigate('/');
+                }
             } else {
-                navigate('/');
+                alert('Login failed. Please check your credentials.');
             }
-        } else {
+        } catch (error) {
+            console.error('Login failed', error.response ? error.response.data : error.message);
             alert('Login failed. Please check your credentials.');
         }
     };
@@ -48,6 +53,7 @@ const Login = ({ onLogin }) => {
                     <input type="password" className="form-control" value={password} onChange={(e) => setPassword(e.target.value)} required />
                 </div>
                 <button type="submit" className="btn btn-primary">Login</button>
+                <button type="button" className="btn btn-secondary" onClick={() => navigate('/register')}>Register</button>
             </form>
         </div>
     );
