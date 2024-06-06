@@ -335,7 +335,7 @@ const SeatSelection = ({ planeId, userRole, selectedDate, selectedTime }) => {
                     </>
                 )}
                 {totalPrice > 0 && (
-                    <button className="btn btn-success" onClick={() => setShowModal(true)}>Pay for Seats</button>
+                    <button hidden className="btn btn-success" onClick={() => setShowModal(true)}>Pay for Seats</button>
                 )}
             </div>
 

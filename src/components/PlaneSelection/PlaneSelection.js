@@ -22,7 +22,7 @@ const PlaneSelection = ({ onSelectPlane }) => {
         setSelectedDate(date);
         const day = new Date(date).getDay();
         if (selectedPlane === '66587ad30cef16eb96e7fedc') {
-            if ([0, 2, 4].includes(day)) {
+            if ([0,1,2,3,4,5,6].includes(day)) {
                 setAvailableTimes(['07:00']);
             } else {
                 setAvailableTimes([]);
@@ -55,7 +55,7 @@ const PlaneSelection = ({ onSelectPlane }) => {
             <h1>Welcome to CheapAir</h1>
             <h3>Your journey starts here</h3>
             <div className="plane-selection-background">
-                <img src="path/to/plane-image.jpg" alt="Plane" />
+             
             </div>
             <div className="form-group">
                 <label htmlFor="plane">Select Your Plane</label>

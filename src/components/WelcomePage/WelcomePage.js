@@ -13,8 +13,8 @@ const WelcomePage = () => {
     return (
         <div className="welcome-page">
             <div className="welcome-content">
-                <h1>HIMALAYA JET</h1>
-                <h2>A Premium Long-Haul Carrier</h2>
+                <h1>Cheap Air</h1>
+                <h2>An Afforable Carrier</h2>
                 <button onClick={handleBookNowClick} className="btn btn-primary">BOOK NOW</button>
             </div>
         </div>
